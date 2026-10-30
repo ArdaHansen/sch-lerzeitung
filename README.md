@@ -14,6 +14,12 @@ Den Projektordner auf einen PHP-Webhost mit beschreibbarem `data/`-Ordner laden.
 
 Setze auf dem Webhost die Umgebungsvariable `WIDA_ADMIN_PASSWORD` auf ein eigenes, mindestens 16 Zeichen langes Passwort. Der lokale Code `2506` wird außerhalb von localhost nicht akzeptiert. Fünf falsche Versuche sperren die Sitzung für 15 Minuten.
 
+## Auf Render deployen
+
+Erstelle in Render einen neuen **Web Service** für dieses GitHub-Repository und wähle als Runtime **Docker**. Bei einem bereits als Node.js angelegten Service muss ein Docker-Web-Service erstellt werden. Lasse Root Directory, Build Command und Start Command leer; Render baut dann das `Dockerfile` im Repository. Der Container stellt Apache auf Port `10000` bereit.
+
+Lege unter **Environment** `WIDA_ADMIN_PASSWORD` mit einem eigenen Passwort aus mindestens 16 Zeichen an. Damit Beiträge und Website-Einstellungen Deployments und Neustarts überstehen, füge unter **Disks** einen persistenten Datenträger mit Mount Path `/var/www/html/data` hinzu. Ohne diesen Datenträger sind Änderungen im `data/`-Ordner nicht dauerhaft gespeichert.
+
 ## Website bearbeiten
 
 Oben rechts **Editor** öffnen und anmelden. Name, Überschrift, Beschreibung, Hintergrund-, Text- und Akzentfarbe sowie Textausrichtung lassen sich ohne Programmieren ändern. **Änderungen speichern** schreibt die Einstellungen in `data/settings.json`; sie bleiben nach einem Neustart erhalten. Der Serverprozess benötigt Schreibrechte für den Ordner `data/`. Für den Editor auf einem Webhost sollte die Website über HTTPS laufen.
