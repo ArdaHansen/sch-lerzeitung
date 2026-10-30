@@ -1,0 +1,2 @@
+# sch-lerzeitung
+Schülerzeitung Skript
