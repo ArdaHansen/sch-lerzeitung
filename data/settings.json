@@ -1,0 +1,14 @@
+{
+  "theme": {
+    "title": "Artikel folgt.",
+    "text": "Der erste Artikel erscheint bald."
+  },
+  "appearance": {
+    "brand": "WIDA ON PAPER",
+    "background": "#000000",
+    "textColor": "#ffffff",
+    "accentColor": "#a0a0a0",
+    "alignment": "center"
+  },
+  "blocks": []
+}
