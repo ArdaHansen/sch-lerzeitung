@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="WIDA ON PAPER – Der erste Artikel folgt bald.">
+    <title>WIDA ON PAPER — Artikel folgt</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body class="coming-soon">
+    <button class="editor-button" id="editorButton" type="button">Editor</button>
+    <main class="coming-soon-main">
+      <div class="coming-soon-content align-center" id="siteMessage">
+        <p class="coming-soon-brand" id="siteBrand">WIDA ON PAPER</p>
+        <h1 id="siteTitle">Artikel folgt.</h1>
+        <p class="coming-soon-subtitle" id="siteText">Der erste Artikel erscheint bald.</p>
+      </div>
+    </main>
+    <dialog class="editor-dialog" id="editorDialog" aria-labelledby="editorDialogTitle">
+      <button class="dialog-close" id="dialogClose" type="button" aria-label="Fenster schließen">×</button>
+      <section id="loginView">
+        <p class="editor-eyebrow">WEBSITE BEARBEITEN</p>
+        <h2 id="editorDialogTitle">Editor öffnen</h2>
+        <p class="editor-help">Gib deinen vierstelligen Zugangscode ein.</p>
+        <form class="editor-form" id="loginForm">
+          <label for="editorCode">Zugangscode</label>
+          <input id="editorCode" name="password" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="current-password" required>
+          <p class="editor-message" id="loginMessage" role="status"></p>
+          <button class="editor-save" type="submit">Editor öffnen</button>
+        </form>
+      </section>
+      <section id="editorView" hidden>
+        <p class="editor-eyebrow">OHNE PROGRAMMIEREN</p>
+        <h2>Website gestalten</h2>
+        <p class="editor-help">Deine Änderungen werden dauerhaft gespeichert.</p>
+        <form class="editor-form" id="editorForm">
+          <label for="brandInput">Name oben</label>
+          <input id="brandInput" name="brand" maxlength="60" required>
+          <label for="titleInput">Große Überschrift</label>
+          <input id="titleInput" name="title" maxlength="120" required>
+          <label for="textInput">Text darunter</label>
+          <textarea id="textInput" name="text" rows="3" maxlength="500"></textarea>
+          <div class="editor-color-grid">
+            <label for="backgroundInput">Hintergrundfarbe<input id="backgroundInput" name="background" type="color" required></label>
+            <label for="textColorInput">Textfarbe<input id="textColorInput" name="textColor" type="color" required></label>
+            <label for="accentInput">Akzentfarbe<input id="accentInput" name="accentColor" type="color" required></label>
+          </div>
+          <label for="alignmentInput">Textausrichtung</label>
+          <select id="alignmentInput" name="alignment">
+            <option value="left">Links</option>
+            <option value="center">Mittig</option>
+            <option value="right">Rechts</option>
+          </select>
+          <p class="editor-message" id="editorMessage" role="status"></p>
+          <button class="editor-save" type="submit">Änderungen speichern</button>
+        </form>
+        <button class="editor-logout" id="logoutButton" type="button">Abmelden</button>
+      </section>
+    </dialog>
+  </body>
+</html>
