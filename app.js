@@ -298,13 +298,14 @@ document.querySelector("#searchInput").addEventListener("input", renderStoryGrid
 
 document.querySelector("#loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const form = event.currentTarget;
   setMessage(loginMessage, "");
   try {
-    await requestApi("login", { password: new FormData(event.currentTarget).get("password") });
+    await requestApi("login", { password: new FormData(form).get("password") });
     isLoggedIn = true;
     loginView.hidden = true;
     editorView.hidden = false;
-    event.currentTarget.reset();
+    form.reset();
     fillEditor();
   } catch (error) {
     setMessage(loginMessage, error.message, true);
@@ -338,11 +339,12 @@ document.querySelector("#editorForm").addEventListener("submit", async (event) =
 
 document.querySelector("#articleForm").addEventListener("submit", async (event) => {
   event.preventDefault();
+  const form = event.currentTarget;
   setMessage(articleMessage, "Artikel wird veröffentlicht …");
   try {
-    const result = await requestApi("create", new FormData(event.currentTarget));
+    const result = await requestApi("create", new FormData(form));
     posts.unshift(result.post);
-    event.currentTarget.reset();
+    form.reset();
     renderPosts();
     setMessage(articleMessage, "Artikel veröffentlicht.");
   } catch (error) {
