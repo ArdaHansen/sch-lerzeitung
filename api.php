@@ -86,6 +86,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'posts') {
     respond(['posts' => read_posts($dataPath)]);
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'image') {
+    $imageId = (string) ($_GET['id'] ?? '');
+    $imageTypes = ['jpg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp', 'gif' => 'image/gif'];
+    if (!preg_match('/\A[a-f0-9]{32}\.(jpg|png|webp|gif)\z/', $imageId, $matches)) {
+        respond(['error' => 'Das Bild wurde nicht gefunden.'], 404);
+    }
+
+    $imagePath = __DIR__ . '/data/images/' . $imageId;
+    if (!is_file($imagePath)) {
+        respond(['error' => 'Das Bild wurde nicht gefunden.'], 404);
+    }
+
+    header('Content-Type: ' . $imageTypes[$matches[1]]);
+    header('Cache-Control: public, max-age=31536000, immutable');
+    header('Content-Length: ' . filesize($imagePath));
+    readfile($imagePath);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && $action === 'status') {
     respond(['authenticated' => !empty($_SESSION['is_editor'])]);
 }
@@ -98,7 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(['error' => 'Methode nicht erlaubt.'], 405);
 }
 
-$input = json_decode(file_get_contents('php://input') ?: '', true);
+if ($action === 'create' && str_starts_with($_SERVER['CONTENT_TYPE'] ?? '', 'multipart/form-data')) {
+    $input = $_POST;
+} else {
+    $input = json_decode(file_get_contents('php://input') ?: '', true);
+}
 if (!is_array($input)) {
     respond(['error' => 'Ungültige Anfrage.'], 400);
 }
@@ -195,6 +218,7 @@ $teaser = clean_text($input['teaser'] ?? null, 220);
 $content = clean_text($input['content'] ?? null, 12000);
 $image = clean_text($input['image'] ?? null, 1000);
 $allowedBlockTypes = ['paragraph', 'heading', 'quote', 'list'];
+$allowedCategories = ['Allgemein', 'Wichtig', 'Eilmeldung', 'WIDA', 'Interview', 'Startseite'];
 $blocks = [];
 if (is_array($input['blocks'] ?? null)) {
     foreach (array_slice($input['blocks'], 0, 40) as $block) {
@@ -207,12 +231,30 @@ if (is_array($input['blocks'] ?? null)) {
     }
 }
 
-if ($title === '' || $category === '' || $author === '' || $teaser === '' || $content === '') {
-    respond(['error' => 'Bitte fülle alle Pflichtfelder aus.'], 422);
+if ($title === '' || !in_array($category, $allowedCategories, true) || $author === '' || $teaser === '' || $content === '') {
+    respond(['error' => 'Bitte fülle alle Pflichtfelder aus und wähle eine gültige Kategorie.'], 422);
 }
 
 if ($image !== '' && (!filter_var($image, FILTER_VALIDATE_URL) || !in_array(parse_url($image, PHP_URL_SCHEME), ['http', 'https'], true))) {
     respond(['error' => 'Das Bild benötigt eine gültige HTTP- oder HTTPS-Adresse.'], 422);
+}
+
+$uploadedImageName = '';
+if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
+    $uploadedFile = $_FILES['image'];
+    if ($uploadedFile['error'] !== UPLOAD_ERR_OK) {
+        respond(['error' => 'Das Bild konnte nicht hochgeladen werden.'], 422);
+    }
+    if ($uploadedFile['size'] > 5 * 1024 * 1024) {
+        respond(['error' => 'Das Bild darf höchstens 5 MB groß sein.'], 413);
+    }
+
+    $imageInfo = getimagesize($uploadedFile['tmp_name']);
+    $imageExtensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
+    if ($imageInfo === false || !isset($imageExtensions[$imageInfo['mime']])) {
+        respond(['error' => 'Erlaubt sind JPG-, PNG-, WebP- und GIF-Bilder.'], 415);
+    }
+    $uploadedImageName = bin2hex(random_bytes(16)) . '.' . $imageExtensions[$imageInfo['mime']];
 }
 
 $directory = dirname($dataPath);
@@ -229,6 +271,29 @@ $stored = stream_get_contents($handle);
 $posts = is_string($stored) ? json_decode($stored, true) : null;
 if (!is_array($posts)) {
     $posts = [];
+}
+
+if ($category === 'Startseite' && count(array_filter($posts, static fn ($existingPost): bool => ($existingPost['category'] ?? '') === 'Startseite')) >= 4) {
+    flock($handle, LOCK_UN);
+    fclose($handle);
+    respond(['error' => 'Es können höchstens vier Artikel in der Kategorie Startseite stehen.'], 422);
+}
+
+if ($uploadedImageName !== '') {
+    $imageDirectory = $directory . '/images';
+    if (!is_dir($imageDirectory) && !mkdir($imageDirectory, 0755, true) && !is_dir($imageDirectory)) {
+        flock($handle, LOCK_UN);
+        fclose($handle);
+        respond(['error' => 'Der Bildordner konnte nicht angelegt werden.'], 500);
+    }
+
+    $imagePath = $imageDirectory . '/' . $uploadedImageName;
+    if (!move_uploaded_file($uploadedFile['tmp_name'], $imagePath)) {
+        flock($handle, LOCK_UN);
+        fclose($handle);
+        respond(['error' => 'Das Bild konnte nicht gespeichert werden.'], 500);
+    }
+    $image = 'api.php?action=image&id=' . $uploadedImageName;
 }
 
 $post = [
@@ -252,6 +317,9 @@ flock($handle, LOCK_UN);
 fclose($handle);
 
 if ($saved === false) {
+    if ($uploadedImageName !== '') {
+        unlink($imagePath);
+    }
     respond(['error' => 'Der Beitrag konnte nicht gespeichert werden.'], 500);
 }
 

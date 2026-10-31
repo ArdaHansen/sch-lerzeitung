@@ -9,15 +9,62 @@
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
   </head>
-  <body class="coming-soon">
-    <button class="editor-button" id="editorButton" type="button">Editor</button>
-    <main class="coming-soon-main">
-      <div class="coming-soon-content align-center" id="siteMessage">
-        <p class="coming-soon-brand" id="siteBrand">WIDA ON PAPER</p>
-        <h1 id="siteTitle">Artikel folgt.</h1>
-        <p class="coming-soon-subtitle" id="siteText">Der erste Artikel erscheint bald.</p>
-      </div>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#home" aria-label="WIDA ON PAPER Startseite">
+        <span class="wordmark-main" id="siteBrand">WIDA ON PAPER</span><span class="wordmark-dot">.</span>
+      </a>
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="#home">Startseite</a>
+        <a href="#articles">Artikel</a>
+      </nav>
+      <button class="admin-trigger" id="editorButton" type="button"><span class="admin-icon" aria-hidden="true">✎</span><span>Editor</span></button>
+    </header>
+    <main id="home">
+      <section class="intro" id="siteMessage">
+        <div class="issue-label"><span class="issue-mark"></span> SCHÜLERZEITUNG · WIDA</div>
+        <div class="intro-row">
+          <h1 id="siteTitle">Artikel folgt.</h1>
+          <p id="siteText">Der erste Artikel erscheint bald.</p>
+        </div>
+        <div class="intro-bottom"><span>UNABHÄNGIG · AUS DER SCHULE · FÜR DIE SCHULE</span><span id="storyCount">0 Artikel</span></div>
+      </section>
+      <section class="featured-section" id="featuredSection" aria-label="Artikel auf der Startseite" hidden>
+        <div class="section-heading"><span class="heading-rule"></span><span>AUF DER STARTSEITE</span><span id="featuredPosition"></span></div>
+        <article class="featured-story">
+          <div class="featured-image" id="featuredImage"></div>
+          <div class="featured-copy">
+            <div class="story-meta"><span class="category-mark"></span><span id="featuredCategory"></span><span id="featuredAuthor"></span></div>
+            <h2 id="featuredTitle"></h2>
+            <p id="featuredTeaser"></p>
+            <button class="story-link" id="featuredOpen" type="button">Artikel lesen <span aria-hidden="true">→</span></button>
+            <div class="featured-controls" id="featuredControls" hidden>
+              <button type="button" id="featuredPrevious" aria-label="Vorheriger Startseiten-Artikel">←</button>
+              <div id="featuredDots" aria-label="Startseiten-Artikel auswählen"></div>
+              <button type="button" id="featuredNext" aria-label="Nächster Startseiten-Artikel">→</button>
+            </div>
+          </div>
+        </article>
+      </section>
+      <section class="latest-section" id="articles" aria-labelledby="articlesTitle">
+        <div class="latest-top">
+          <div><p class="eyebrow">AUS DER REDAKTION</p><h2 id="articlesTitle">Alle <span>Artikel</span></h2></div>
+          <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Artikel suchen" aria-label="Artikel suchen"></label>
+        </div>
+        <div class="filter-row" id="categoryFilters" aria-label="Nach Kategorie filtern"></div>
+        <div class="story-grid" id="storyGrid" aria-live="polite"></div>
+        <p class="empty-state" id="emptyState" hidden>Noch keine Artikel veröffentlicht.</p>
+      </section>
     </main>
+    <footer class="site-footer"><span class="footer-wordmark" id="footerBrand">WIDA ON PAPER</span><span>Beiträge bleiben dauerhaft im Archiv.</span><a href="#home">Nach oben ↑</a></footer>
+    <dialog class="admin-dialog story-dialog" id="storyDialog" aria-labelledby="storyTitle">
+      <button class="dialog-close" id="storyClose" type="button" aria-label="Artikel schließen">×</button>
+      <div class="story-dialog-image" id="storyImage" hidden></div>
+      <p class="story-meta" id="storyMeta"></p>
+      <h2 id="storyTitle"></h2>
+      <p class="dialog-copy" id="storyTeaser"></p>
+      <div class="story-dialog-content" id="storyContent"></div>
+    </dialog>
     <dialog class="editor-dialog" id="editorDialog" aria-labelledby="editorDialogTitle">
       <button class="dialog-close" id="dialogClose" type="button" aria-label="Fenster schließen">×</button>
       <section id="loginView">
@@ -56,6 +103,41 @@
           <p class="editor-message" id="editorMessage" role="status"></p>
           <button class="editor-save" type="submit">Änderungen speichern</button>
         </form>
+        <section class="publish-section" aria-labelledby="publishTitle">
+          <h2 id="publishTitle">Artikel veröffentlichen</h2>
+          <p class="editor-help">Veröffentlichte Artikel bleiben dauerhaft online. Ein Bild ist optional.</p>
+          <form class="editor-form" id="articleForm" enctype="multipart/form-data">
+            <label for="articleTitle">Überschrift</label>
+            <input id="articleTitle" name="title" maxlength="120" required>
+            <div class="form-row">
+              <div>
+                <label for="articleAuthor">Autor:in</label>
+                <input id="articleAuthor" name="author" maxlength="60" required>
+              </div>
+              <div>
+                <label for="articleCategory">Kategorie</label>
+                <select id="articleCategory" name="category" required>
+                  <option>Allgemein</option>
+                  <option>Wichtig</option>
+                  <option>Eilmeldung</option>
+                  <option>WIDA</option>
+                  <option>Interview</option>
+                  <option value="Startseite">Startseite</option>
+                </select>
+              </div>
+            </div>
+            <label for="articleTeaser">Kurzbeschreibung</label>
+            <textarea id="articleTeaser" name="teaser" rows="2" maxlength="220" required></textarea>
+            <label for="articleContent">Artikeltext</label>
+            <textarea id="articleContent" name="content" rows="8" maxlength="12000" required></textarea>
+            <label for="articleImage">Bild <span class="optional-label">(optional)</span></label>
+            <input id="articleImage" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+            <p class="upload-help">JPG, PNG, WebP oder GIF · maximal 5 MB</p>
+            <p class="editor-message" id="startPageCount" role="status">Startseite: 0 von 4 Artikeln</p>
+            <p class="editor-message" id="articleMessage" role="status"></p>
+            <button class="editor-save" type="submit">Artikel veröffentlichen</button>
+          </form>
+        </section>
         <button class="editor-logout" id="logoutButton" type="button">Abmelden</button>
       </section>
     </dialog>

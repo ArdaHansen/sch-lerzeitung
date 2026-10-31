@@ -23,3 +23,9 @@ Lege unter **Environment** `WIDA_ADMIN_PASSWORD` mit einem eigenen Passwort aus 
 ## Website bearbeiten
 
 Oben rechts **Editor** öffnen und anmelden. Name, Überschrift, Beschreibung, Hintergrund-, Text- und Akzentfarbe sowie Textausrichtung lassen sich ohne Programmieren ändern. **Änderungen speichern** schreibt die Einstellungen in `data/settings.json`; sie bleiben nach einem Neustart erhalten. Der Serverprozess benötigt Schreibrechte für den Ordner `data/`. Für den Editor auf einem Webhost sollte die Website über HTTPS laufen.
+
+## Artikel veröffentlichen
+
+Im Editor lassen sich Artikel mit Überschrift, Autor:in, Kurzbeschreibung und Text veröffentlichen. Die Kategorien sind **Allgemein**, **Wichtig**, **Eilmeldung**, **WIDA**, **Interview** und **Startseite**. Alle Beiträge bleiben dauerhaft online und sind über die Kategorienfilter und die Suche auffindbar.
+
+Artikel der Kategorie **Startseite** erscheinen zusätzlich im wechselnden Startseitenbereich. Es können höchstens vier gleichzeitig sein. Optional lässt sich ein JPG-, PNG-, WebP- oder GIF-Bild bis 5 MB hochladen. Für Render muss der persistente Datenträger unter `/var/www/html/data` eingebunden sein, damit Artikel und Bilder Deployments überstehen.
