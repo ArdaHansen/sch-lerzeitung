@@ -63,7 +63,6 @@ function applySite() {
   document.querySelector("#siteTitle").textContent = site.theme.title;
   document.querySelector("#siteText").textContent = site.theme.text;
   document.body.style.setProperty("--accent", site.appearance.accentColor);
-  document.body.style.setProperty("--deep-blue", site.appearance.accentColor);
   document.querySelector('meta[name="theme-color"]').content = site.appearance.background;
   document.querySelector('meta[name="description"]').content = `${site.appearance.brand} — ${site.theme.title} ${site.theme.text}`.trim();
   document.title = `${site.appearance.brand} — ${site.theme.title}`;
