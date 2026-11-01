@@ -5,9 +5,9 @@
   },
   "appearance": {
     "brand": "WIDA ON PAPER",
-    "background": "#000000",
-    "textColor": "#ffffff",
-    "accentColor": "#a0a0a0",
+    "background": "#f4f3ed",
+    "textColor": "#1b211a",
+    "accentColor": "#b7d64a",
     "alignment": "center"
   },
   "blocks": []
